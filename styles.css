@@ -1,0 +1,62 @@
+:root {
+    --bg: #ffffff;
+    --fg: #111;
+}
+
+[data-theme="dark"] {
+    --bg: #0b0b0b;
+    --fg: #eee;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    margin: 0;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+form {
+    display: flex;
+    gap: .5rem;
+}
+
+#results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: .75rem;
+    list-style: none;
+    padding: 0;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: .75rem;
+}
+
+.observe-box {
+    margin-top: 60vh;
+    height: 120px;
+    border: 2px dashed #888;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+}
