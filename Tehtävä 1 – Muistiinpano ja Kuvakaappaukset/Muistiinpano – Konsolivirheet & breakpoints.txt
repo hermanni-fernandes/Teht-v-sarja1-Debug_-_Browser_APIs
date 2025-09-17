@@ -1,0 +1,41 @@
+Tehtävä 1 – Konsolivirheet & breakpoints
+
+Konsolivirheet / havainnot
+
+Virheilmoitus: TypeError: data.slice is not a function (ilmestyy, kun painan Hae).
+
+Syy: data ei ollut taulukko vaan olio, jossa oli virhekentät ({ error: 500, message: 'Unexpected data sent in! GET NOT received: {}' }). Siksi data.slice(...) kaatui, koska slice on taulukon metodi.
+
+Miten varmistin:
+
+Avasin DevTools → Console ja laitoin Preserve log päälle.
+
+Klikkasin virheen linkkiä (esim. app.js:30) → Sources avautui.
+
+Asetin breakpointin riville, jossa palautetaan data.slice(...), ajoin haun uudestaan ja hoveroin muuttujaa data. Hover-näytössä näkyi Object (ei Array) sekä kentät error ja message.
+
+Call Stack kertoi, että virhe tuli searchImages-funktiosta lomakkeen submit-käsittelijän kautta.
+
+Todennäköinen juurisyy: Verkko-/rajapintavirhe tai palautteen rakenne poikkeaa odotetusta (500-koodi).
+
+Kuvakaappaukset:
+
+Kuva 1: Console, jossa punainen virheilmoitus.
+
+Kuva 2: Sources-näkymä breakpointeineen; hover data näyttää objektin (error, message).
+
+Breakpoint & askellus (toggleTheme)
+
+Avasin Sources ja etsin funktion toggleTheme().
+
+Asetin breakpointin funktion alkuun.
+
+Painoin sivulla “Vaihda teema” → suoritus pysähtyi breakpointtiin.
+
+Askeloin koodia Step over (F10) ja seurasin Scope-paneelista muuttujien arvoja.
+
+Lopuksi Resume (F8), jolloin teema vaihtui onnistuneesti (sivun luokka/tyyli päivittyi).
+
+Kuvakaappaus:
+
+Kuva 3: Pausella toggleTheme-funktion kohdalla; näkyvissä korostettu rivi ja Scope-paneeli (sekä sivun “Paused in debugger” -merkki).
