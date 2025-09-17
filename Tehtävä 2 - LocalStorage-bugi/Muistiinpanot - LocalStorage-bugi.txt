@@ -1,0 +1,11 @@
+Korjaus: LocalStorage-avaimen typo korjattu → theme-preference käytössä sekä kirjoituksessa että luvussa.
+
+Tuplakuuntelija: Poistettu ylimääräinen addEventListener('click', toggleTheme), jäljellä vain yksi.
+
+Varmistus:
+
+Application → Storage → Local Storage näyttää theme-preference = light/dark.
+
+getEventListeners(document.getElementById('themeToggle')).click.length → 1.
+
+Kuvakaappaukset: Local Storage oikealla avaimella + konsolin tarkistus.
