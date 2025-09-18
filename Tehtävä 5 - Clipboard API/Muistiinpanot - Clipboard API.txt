@@ -1,0 +1,17 @@
+Tavoite: Ei kaatumista epäonnistuessa; onnistumisesta näkyy 2s “Kopioitu”-status ilman alertia.
+
+Ratkaisu:
+
+showToast(msg, type) + CSS .toast (success/error).
+
+HTTPS/localhost-tarkistus: location.protocol === 'https:' || hostname === 'localhost/127.0.0.1'.
+
+navigator.permissions?.query({ name: 'clipboard-write' }) (best-effort).
+
+try/catch ympärillä → virheessä punainen toast.
+
+Testit:
+
+Onnistui Live Previewssa → vihreä Kopioitu.
+
+file:// (insecure) → punainen “Leikepöytä vaatii HTTPSin tai localhostin”.

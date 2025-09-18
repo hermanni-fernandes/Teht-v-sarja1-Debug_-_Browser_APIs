@@ -15,9 +15,23 @@ function toggleTheme() {
   applyTheme(next);
   saveTheme(next);
 }
-
 themeBtn.addEventListener('click', toggleTheme);
 applyTheme(loadTheme());
+
+/* --- Toast helper for small status banners --- */
+function showToast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = `toast toast--${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  // fade in
+  requestAnimationFrame(() => { el.style.opacity = '1'; });
+  // auto hide after 2s
+  setTimeout(() => {
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 200);
+  }, 2000);
+}
 
 // 2) Haku — vaihda hakua tukevaan API:in + try/catch + AbortController + lataustila
 const form = document.getElementById('searchForm');
@@ -98,11 +112,35 @@ counterBtn.addEventListener('click', (e) => {
   span.textContent = String(parseInt(span.textContent, 10) + 1);
 });
 
-// 4) Clipboard — virhe: ei permissioiden / https tarkistusta
+// 4) Clipboard — HTTPS/permission-tarkistus + virheenkäsittely + 2s toast (ei alertia)
 $('#copyBtn').addEventListener('click', async () => {
-  const text = $('#copyBtn').dataset.text;
-  await navigator.clipboard.writeText(text); // BUG: voi heittää virheen
-  alert('Kopioitu!');
+  const text = $('#copyBtn').dataset.text || '';
+
+  // Secure context check: HTTPS tai localhost/127.0.0.1
+  const isSecure =
+    location.protocol === 'https:' ||
+    location.hostname === 'localhost' ||
+    location.hostname === '127.0.0.1';
+
+  if (!isSecure) {
+    showToast('Leikepöytä vaatii HTTPSin tai localhostin', 'error');
+    return;
+  }
+
+  try {
+    // Permission (parhaan kyvyn mukaan; ei kaikissa selaimissa)
+    const perm = await navigator.permissions?.query?.({ name: 'clipboard-write' });
+    if (perm && perm.state === 'denied') {
+      showToast('Ei oikeuksia leikepöydälle', 'error');
+      return;
+    }
+
+    await navigator.clipboard.writeText(text);
+    showToast('Kopioitu', 'success');
+  } catch (err) {
+    console.error('Clipboard error:', err);
+    showToast('Kopiointi epäonnistui', 'error');
+  }
 });
 
 // 5) IntersectionObserver — virhe: threshold/cleanup puuttuu
