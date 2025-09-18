@@ -1,5 +1,3 @@
-Tehtävä 1 – Konsolivirheet & breakpoints
-
 Konsolivirheet / havainnot
 
 Virheilmoitus: TypeError: data.slice is not a function (ilmestyy, kun painan Hae).

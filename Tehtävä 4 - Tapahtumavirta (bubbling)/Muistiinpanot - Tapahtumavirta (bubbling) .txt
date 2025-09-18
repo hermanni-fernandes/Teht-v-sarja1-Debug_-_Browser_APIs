@@ -1,0 +1,13 @@
+Ongelma: Klikkaus numeron kohdalla ei lisännyt arvoa.
+
+Syy: Klikinkäsittelijä keskeytti, jos kohde-elementillä oli luokka count → numeron klikkaus ohitettiin.
+
+Korjaus:
+
+Käytin e.target.closest('.counter') valitsemaan napin riippumatta mistä lapsesta klikkaus alkoi.
+
+Poistin estävän tarkistuksen.
+
+Tulos: Klikkaus sekä “Klikit”-tekstissä että numerossa kasvattaa arvoa tasan +1 / klikkaus. Ei tuplalaskentaa.
+
+Testi: Klikattiin vuorotellen tekstistä ja numerosta; arvo kasvoi odotetusti.

@@ -88,11 +88,13 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// 3) Laskuri — virhe: event delegation ja bubbling sekoilee
+// 3) Laskuri — korjaus: klikkaus missä tahansa napissa kasvattaa lukua
 const counterBtn = $('.counter');
 counterBtn.addEventListener('click', (e) => {
-  if (e.target.classList.contains('count')) return; // BUG: estää klikin
-  const span = $('.count', counterBtn);
+  // valitse aina itse nappi riippumatta klikatusta childista
+  const btn = e.target.closest('.counter');
+  if (!btn) return;
+  const span = $('.count', btn);
   span.textContent = String(parseInt(span.textContent, 10) + 1);
 });
 
