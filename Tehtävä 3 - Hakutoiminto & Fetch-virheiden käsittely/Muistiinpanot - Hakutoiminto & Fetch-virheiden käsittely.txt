@@ -1,0 +1,27 @@
+API-vaihto: Käytän DummyJSON-hakua: https://dummyjson.com/products/search?q=<hakusana>. Tämä tukee hakusanaa.
+
+Lataus- ja tulosviestit (statusEl):
+
+Haku alkaa → “Ladataan…”
+
+Tuloksia löytyy → esim. “8 tulosta”
+
+Ei tuloksia → “Ei tuloksia”
+
+Haku perutaan uuden haun toimesta → “Haku peruttu (uusi haku käynnissä)”
+
+Verkko-/fetch-virhe → “Virhe haussa”
+
+Virheiden käsittely: try/catch ympäröi fetch-kutsun. Jos res.ok on false tai verkko katkeaa, virhe näkyy käyttäjälle (“Virhe haussa”) eikä sovellus kaadu.
+
+Abortointi: Käytän AbortControlleria. Uusi haku peruu edellisen (controller.abort() ja signal välitetään fetchiin). Testasin kirjoittamalla nopeasti laptop → heti perään phone. Tulokset ja status vastaavat jälkimmäistä hakua, ja Network-välilehdellä ensimmäinen request näkyy (canceled).
+
+Kuvakaappaukset:
+
+Onnistunut haku (“8 tulosta”, kortit)
+
+Ei tuloksia (“Ei tuloksia”)
+
+Abortointi (valinnainen: Network näyttää canceled)
+
+Offline-testi (“Virhe haussa” + epäonnistunut request)
