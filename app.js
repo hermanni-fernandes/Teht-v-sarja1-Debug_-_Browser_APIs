@@ -39,6 +39,7 @@ const resultsEl = document.getElementById('results');
 const statusEl = document.getElementById('status');
 
 let searchController = null; // perumista varten
+let suppressPush = false;    // estää pushState:n, kun autohaetaan URL:sta
 
 // DummyJSON: https://dummyjson.com/docs/products#search
 async function searchImages(query, { signal } = {}) {
@@ -66,6 +67,16 @@ form.addEventListener('submit', async (e) => {
   if (!q) {
     statusEl.textContent = 'Anna hakusana';
     return;
+  }
+
+  // 🔹 URL & History API: päivitä ?q=... (push normaalisti, replace autohaussa)
+  const urlObj = new URL(location.href);
+  urlObj.searchParams.set('q', q);
+  if (!suppressPush) {
+    history.pushState({ q }, '', urlObj);
+  } else {
+    history.replaceState({ q }, '', urlObj);
+    suppressPush = false; // nollaa lipun autohaun jälkeen
   }
 
   // Peru aiempi haku, jos käynnissä
@@ -159,3 +170,28 @@ const io = new IntersectionObserver((entries, observer) => {
   }
 }, { threshold: 0.25 });
 io.observe(box);
+
+// --- Alusta sivu URL:in perusteella: ?q=... -> täytä input ja tee haku (ilman uutta history-merkintää)
+(function initFromUrl() {
+  const q0 = new URL(location.href).searchParams.get('q');
+  if (q0) {
+    $('#q').value = q0;
+    suppressPush = true; // ettei lisätä uutta merkintää autohaussa
+    if (form.requestSubmit) form.requestSubmit();
+    else form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  }
+})();
+
+// --- Back/Forward: päivitä input & tee haku URL:in q-paramin mukaan
+window.addEventListener('popstate', () => {
+  const q = new URL(location.href).searchParams.get('q') || '';
+  $('#q').value = q;
+  resultsEl.innerHTML = '';
+  statusEl.textContent = '';
+
+  if (q) {
+    suppressPush = true; // ettei popstate-haussa lisätä uutta history-merkintää
+    if (form.requestSubmit) form.requestSubmit();
+    else form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  }
+});

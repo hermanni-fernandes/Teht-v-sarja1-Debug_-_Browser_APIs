@@ -1,0 +1,25 @@
+Tavoite: Haku ja osoiterivi pysyvät synkassa, sivu osaa hakea suoraan URL-parametrista, ja selaimen Back/Forward vaihtaa hakua ilman uudelleenlatausta.
+
+Ratkaisu:
+
+pushState + ?q=... käyttäjän haussa: kun lähetän lomakkeen, päivitän ?q=<termi> osoiteriville history.pushState-kutsulla.
+
+initFromUrl + replaceState sivun latauksessa: jos URL:ssa on ?q=..., täytän inputin ja käynnistän haun automaattisesti. Käytän history.replaceStatea (lipulla suppressPush), jotta auto-haku ei lisää uutta merkintää historiaan.
+
+popstate: kuuntelen window.popstate-tapahtumaa. Kun käyttäjä painaa Back/Forward, luen ?q=-arvon, päivitän inputin ja ajan haun (tai tyhjennän tulokset, jos parametri puuttuu).
+
+Perustelut:
+
+pushState sopii käyttäjän aktiiviseen hakuun (uusi merkintä).
+
+replaceState estää turhat merkinnät, kun haku käynnistyy automaattisesti URL:sta.
+
+popstate varmistaa, että UI vastaa tarkasti osoiterivin tilaa.
+
+Testit:
+
+Hae “cats” → URL ?q=cats. Hae “phone” → URL päivittyy ?q=phone.
+
+Back → input + tulokset palaavat cats. Forward → takaisin phone.
+
+Päivitä sivu, kun URL on ?q=phone → input esitäytetty “phone” ja haku käynnistyy automaattisesti, ilman ylimääräisiä history-merkintöjä.
