@@ -33,6 +33,15 @@ function showToast(msg, type = 'success') {
   }, 2000);
 }
 
+/* --- Debounce helper (Extra A) --- */
+function debounce(fn, wait = 500) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+
 // 2) Haku — vaihda hakua tukevaan API:in + try/catch + AbortController + lataustila
 const form = document.getElementById('searchForm');
 const resultsEl = document.getElementById('results');
@@ -112,6 +121,16 @@ form.addEventListener('submit', async (e) => {
     searchController = null; // tämä haku on valmis (onnistui, epäonnistui tai peruttiin)
   }
 });
+
+/* --- Debounced auto-search on input (Extra A) --- */
+const qInput = $('#q');
+const debouncedSubmit = debounce(() => {
+  const val = qInput.value.trim();
+  if (!val) return; // älä hae tyhjällä
+  if (form.requestSubmit) form.requestSubmit();
+  else form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+}, 500);
+qInput.addEventListener('input', debouncedSubmit);
 
 // 3) Laskuri — korjaus: klikkaus missä tahansa napissa kasvattaa lukua
 const counterBtn = $('.counter');
@@ -195,3 +214,70 @@ window.addEventListener('popstate', () => {
     else form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   }
 });
+
+// --- Drag & Drop demo: simple two-column board with draggable cards ---
+(function dndSetup() {
+  const main = document.querySelector('main');
+  if (!main) return; // safety
+
+  const section = document.createElement('section');
+  section.innerHTML = `
+    <h2>Drag & Drop (kortit)</h2>
+    <div class="dnd-board">
+      <div class="dnd-col" data-col="todo">
+        <h3>Todo</h3>
+        <div class="dnd-list" id="todo"></div>
+      </div>
+      <div class="dnd-col" data-col="done">
+        <h3>Done</h3>
+        <div class="dnd-list" id="done"></div>
+      </div>
+    </div>
+  `;
+  main.appendChild(section);
+
+  // Seed a few cards in Todo
+  const seed = ['Opettele debuggaus', 'Lisää debounce', 'Refaktoroi koodi'];
+  seed.forEach((title, i) => {
+    const card = document.createElement('div');
+    card.className = 'dnd-card';
+    card.draggable = true;
+    card.dataset.id = `c${i}`;
+    card.textContent = title;
+    section.querySelector('#todo').appendChild(card);
+  });
+
+  const lists = section.querySelectorAll('.dnd-list');
+  let dragId = null;
+
+  // Start/end
+  section.addEventListener('dragstart', (e) => {
+    const card = e.target.closest('.dnd-card');
+    if (!card) return;
+    dragId = card.dataset.id;
+    e.dataTransfer.setData('text/plain', dragId); // needed for some browsers
+    requestAnimationFrame(() => card.classList.add('dragging'));
+  });
+
+  section.addEventListener('dragend', (e) => {
+    const card = e.target.closest('.dnd-card');
+    if (card) card.classList.remove('dragging');
+    dragId = null;
+  });
+
+  // Over/leave/drop on lists
+  lists.forEach((list) => {
+    list.addEventListener('dragover', (e) => {
+      e.preventDefault();           // allow drop
+      list.classList.add('over');   // visual cue
+    });
+    list.addEventListener('dragleave', () => list.classList.remove('over'));
+    list.addEventListener('drop', (e) => {
+      e.preventDefault();
+      list.classList.remove('over');
+      const id = e.dataTransfer.getData('text/plain') || dragId;
+      const card = section.querySelector(`.dnd-card[data-id="${id}"]`);
+      if (card) list.appendChild(card);
+    });
+  });
+})();

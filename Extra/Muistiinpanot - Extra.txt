@@ -1,0 +1,7 @@
+Debounce: debounce(fn, 500ms) hakukentän input-tapahtumassa → automaattinen haku pienen tauon jälkeen.
+
+Historia/URL: Hyödyntää samaa submit-käsittelijää → ?q= päivittyy, Back/Forward toimii.
+
+Drag & Drop: Kaksi saraketta (Todo/Done), kortit draggable. dragover sallii dropin, drop siirtää kortin. Visuaalinen korostus over-tilassa.
+
+Testit: “lap” → auto-haku ~0.5s; kortit siirtyvät suuntaan ja toiseen.
