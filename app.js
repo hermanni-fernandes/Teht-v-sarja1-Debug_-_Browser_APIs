@@ -143,13 +143,19 @@ $('#copyBtn').addEventListener('click', async () => {
   }
 });
 
-// 5) IntersectionObserver — virhe: threshold/cleanup puuttuu
+// 5) IntersectionObserver — threshold 0.25, tee "Näkyvissä!" vain kerran ja siivoa
 const box = document.querySelector('.observe-box');
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.intersectionRatio > 0.25) {
+
+const io = new IntersectionObserver((entries, observer) => {
+  for (const entry of entries) {
+    // callback laukeaa, kun raja 0.25 ylittyy → riittää tarkistaa isIntersecting
+    if (entry.isIntersecting) {
       box.textContent = 'Näkyvissä!';
+      // Vain kerran: lopetetaan tarkkailu ja vapautetaan observer
+      observer.unobserve(entry.target);
+      observer.disconnect();
+      break;
     }
-  });
-});
+  }
+}, { threshold: 0.25 });
 io.observe(box);

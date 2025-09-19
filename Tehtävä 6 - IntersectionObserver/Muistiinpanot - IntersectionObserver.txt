@@ -1,0 +1,11 @@
+Tavoite: Teksti vaihtuu, kun laatikko on vähintään 25 % näkyvissä, ja observer vapautetaan käytön jälkeen.
+
+Ratkaisu:
+
+new IntersectionObserver(callback, { threshold: 0.25 })
+
+if (entry.isIntersecting) { box.textContent = 'Näkyvissä!'; observer.unobserve(entry.target); observer.disconnect(); }
+
+Perustelu: isIntersecting riittää, koska callback laukeaa vasta kun kynnys (0.25) täyttyy. unobserve + disconnect estävät turhat kutsut ja mahdolliset vuotokohdat.
+
+Testi: Sivu päivitetty ja skrollattu; teksti vaihtuu kerran kun ~25 % laatikosta näkyy; jatkoskrollaus ei muuta tekstiä.
